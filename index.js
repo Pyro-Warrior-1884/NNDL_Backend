@@ -9,27 +9,26 @@ app.use(cors());
 app.use(express.json({ limit: '2mb' })); 
 
 app.post('/submit', async (req, res) => {
+  console.log('🟡 Incoming submission:', req.body); // log to Render logs
+
+  const { name, code, timestamp, status } = req.body;
+
+  if (!name || !code || !timestamp || !status) {
+    console.error('🔴 Missing fields:', { name, code, timestamp, status });
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
-    const { name, code, timestamp, status } = req.body;
-
-    if (!name || !code || !timestamp || !status) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
     const docRef = db.collection('submissions').doc();
-    await docRef.set({
-      name,
-      code,
-      timestamp,
-      status
-    });
+    await docRef.set({ name, code, timestamp, status });
 
     res.status(200).json({ message: 'Submission received and saved.' });
   } catch (err) {
-    console.error('Error saving to Firebase:', err);
+    console.error('🔥 Error saving to Firebase:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 app.get('/', (req, res) => {
   res.send('Backend is running.');
