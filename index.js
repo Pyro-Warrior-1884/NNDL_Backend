@@ -19,16 +19,15 @@ app.post('/submit', async (req, res) => {
   }
 
   try {
-    const docRef = db.collection('submissions').doc();
+    const docRef = db.collection('submissions').doc(name); 
     await docRef.set({ name, code, timestamp, status });
 
-    res.status(200).json({ message: 'Submission received and saved.' });
+    res.status(200).json({ message: `Submission saved with ID: ${name}` });
   } catch (err) {
     console.error('🔥 Error saving to Firebase:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 app.get('/', (req, res) => {
   res.send('Backend is running.');
